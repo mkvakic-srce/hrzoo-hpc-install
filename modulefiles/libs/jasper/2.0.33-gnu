@@ -1,0 +1,12 @@
+#%Module 1.0
+
+set lib_ver     jasper/2.0.33-gnu
+
+module-whatis   "Sets up $lib_ver in your environment"
+
+prepend-path    PATH                /apps/libs/$lib_ver/bin
+prepend-path    CPATH               /apps/libs/$lib_ver/include
+prepend-path    LD_LIBRARY_PATH     /apps/libs/$lib_ver/lib
+prepend-path    CMAKE_PREFIX_PATH   /apps/libs/$lib_ver
+setenv          JASPERLIB           /apps/libs/$lib_ver/lib
+setenv          JASPERINC           /apps/libs/$lib_ver/include

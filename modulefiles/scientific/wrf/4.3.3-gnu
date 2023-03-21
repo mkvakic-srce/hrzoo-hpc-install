@@ -1,0 +1,11 @@
+#%Module 1.0
+
+set app_ver     wrf/4.3.3-gnu
+
+module-whatis   "Sets up $app_ver in your environment"
+
+setenv WRF_HOME /apps/scientific/wrf/4.3.3-gnu
+setenv WPS_HOME /apps/scientific/wps/4.3.1-gnu
+
+prepend-path PATH /apps/scientific/wrf/4.3.3-gnu/run
+prepend-path PATH /apps/scientific/wps/4.3.1-gnu

@@ -1,0 +1,12 @@
+#%Module 1.0
+
+set lib_ver     libpng/1.6.37-gnu
+
+module-whatis   "Sets up $lib_ver in your environment"
+
+prepend-path    PATH                /apps/libs/$lib_ver/bin
+prepend-path    CPATH               /apps/libs/$lib_ver/include
+prepend-path    LD_LIBRARY_PATH     /apps/libs/$lib_ver/lib
+prepend-path    CMAKE_PREFIX_PATH   /apps/libs/$lib_ver
+setenv          LIBPNGLIB           /apps/libs/$lib_ver/lib
+setenv          LIBPNGINC           /apps/libs/$lib_ver/include
