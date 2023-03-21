@@ -10,8 +10,9 @@ module unload gcc
 module load gcc/11.2.0
 
 # mkdir & cd
-# sudo mkdir -p /apps/cp2k
-cd /apps/cp2k
+sudo mkdir -p /apps/scientific/cp2k
+sudo chown mkvakic:hpc /apps/scientific/cp2k
+cd /apps/scientific/cp2k
 
 # wget, tar & cd
 git clone -b support/v2022.1 --recursive https://github.com/cp2k/cp2k.git 2022.1-gnu

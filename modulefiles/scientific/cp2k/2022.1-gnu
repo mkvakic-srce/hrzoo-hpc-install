@@ -1,7 +1,7 @@
 #%Module 1.0
 
 set app_ver     cp2k/2022.1-gnu
-set apps_dir    /apps
+set apps_dir    /apps/scientific/
 set bin_prefix  $apps_dir/$app_ver/exe/local
 set deps_prefix $apps_dir/$app_ver/tools/toolchain/install
 
