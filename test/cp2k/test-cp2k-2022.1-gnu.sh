@@ -1,20 +1,12 @@
 #!/bin/bash
 
 #PBS -q cray_cpu
-#PBS -l nodes=1:ppn=8
-#PBS -l mem=32GB
-#PBS -l walltime=60
+#PBS -l select=2:ncpus=8:mem=10GB
+#PBS -l walltime=10
 #PBS -o output/
 #PBS -e output/
 
-# module
-module purge
-module load craype-x86-milan
-module load PrgEnv-gnu
 module load cray-pals
-module load cp2k/2022.1-gnu
-module list
+module load scientific/cp2k/2022.1-gnu
 
-echo "Hello world"
-# export NSLOTS=$( wc -l < $PBS_NODEFILE )
-# mpiexec -n $NSLOTS echo "Hello"
+mpiexec -np 2 --ppn 8 cp2k.psmp -i $PBS_O_WORKDIR/H2O-64.inp
