@@ -4,6 +4,9 @@ set app_ver     wrf/4.3.3-gnu
 
 module-whatis   "Sets up $app_ver in your environment"
 
+module load gcc/11.2.0
+module load libfabric/1.15.2.0
+
 setenv WRF_HOME /apps/scientific/wrf/4.3.3-gnu
 setenv WPS_HOME /apps/scientific/wps/4.3.1-gnu
 
