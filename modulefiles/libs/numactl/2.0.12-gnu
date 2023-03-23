@@ -1,0 +1,8 @@
+#%Module
+
+module-whatis   "Sets up numactl/v2.0.12-gnu in your enviornment"
+
+prepend-path PATH /apps/libs/numactl/2.0.12-gnu/bin
+prepend-path CPATH /apps/libs/numactl/2.0.12-gnu/include
+prepend-path LD_LIBRARY_PATH /apps/libs/numactl/2.0.12-gnu/lib/
+prepend-path MANPATH /apps/libs/numactl/2.0.12-gnu/share/man
