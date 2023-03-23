@@ -1,0 +1,5 @@
+#%Module
+
+module-whatis   "Sets up gengetopt v2.23-gnu in your enviornment"
+
+prepend-path PATH /apps/utils/gengetopt/2.23-gnu/bin

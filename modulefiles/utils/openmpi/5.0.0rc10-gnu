@@ -1,0 +1,13 @@
+#%Module
+
+module-whatis   "Sets up Open MPI v5.0.0rc10-gnu in your enviornment"
+
+module load libfabric
+
+set root_dir /apps/utils/openmpi/5.0.0rc10-gnu
+
+prepend-path PATH "$root_dir/bin"
+prepend-path LD_LIBRARY_PATH "$root_dir/lib"
+prepend-path MANPATH "$root_dir/man"
+setenv MPI_HOME "$root_dir"
+setenv MPI_INCLUDE "$root_dir/include/"
