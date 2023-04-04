@@ -3,15 +3,14 @@
 
 # compile
 module purge
-module load zlib
-module load libpng
-module load jasper
+module load libs/zlib
+module load libs/libpng
+module load libs/jasper
 module load craype-x86-milan
 module load PrgEnv-gnu
-module unload gcc
-module load gcc/11.2.0
-module load cray-netcdf
+module swap gcc/12.1.0 gcc/11.2.0
 module load cray-hdf5
+module load cray-netcdf
 
 # mkdir
 sudo mkdir -p /apps/scientific/wps
@@ -29,6 +28,9 @@ export NETCDF=$NETCDF_DIR
 printf "%s\n" 3 | ./configure
 sed -i "s|COMPRESSION_LIBS    =|COMPRESSION_LIBS    = -L${LIBPNGLIB} |g" configure.wps
 sed -i "s|COMPRESSION_INC     =|COMPRESSION_INC     = -I${LIBPNGINC} |g" configure.wps
+sed -i "s|^SCC.*|SCC                 = cc|g" configure.wps
+sed -i "s|^SFC.*|SFC                 = ftn|g" configure.wps
+sed -i 's|-L$(NETCDF)/lib -lnetcdff -lnetcdf|-L$(NETCDF)/lib -lnetcdff -lnetcdf -lgomp|g' configure.wps
 ./compile
 
 # WPS_GEOG

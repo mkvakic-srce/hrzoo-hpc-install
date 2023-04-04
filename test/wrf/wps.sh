@@ -1,12 +1,11 @@
 #!/bin/bash
 
-#PBS -q cray_cpu
+#PBS -q cpu
 #PBS -l select=1:ncpus=1:mem=20GB
-#PBS -l walltime=600
+#PBS -l walltime=6000
 #PBS -o output/
 #PBS -e output/
 
-module use /lustre/home/mkvakic/hpc-install/modulefiles
 module load scientific/wrf/4.3.3-gnu
 
 # change to working dir

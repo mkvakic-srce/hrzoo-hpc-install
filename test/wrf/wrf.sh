@@ -1,9 +1,7 @@
 #!/bin/bash
 
-#PBS -q cray_cpu
-#PBS -l select=16:ncpus=1:mem=1GB
-#PBS -l place=free
-#PBS -l walltime=20
+#PBS -q gpu
+#PBS -l select=64:ncpus=1:mem=10GB
 #PBS -o output/
 #PBS -e output/
 
@@ -17,4 +15,4 @@ cd $PBS_O_WORKDIR
 ln -sf $WRF_HOME/run/*.TBL .
 ln -sf $WRF_HOME/run/RRTM* .
 ln -sf $WRF_HOME/run/CAMtr_* .
-mpiexec -np 16 wrf.exe
+mpiexec -np 64 wrf.exe

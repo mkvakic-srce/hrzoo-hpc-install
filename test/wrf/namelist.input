@@ -1,6 +1,6 @@
 &time_control
   run_days           = 0
-  run_hours          = 48
+  run_hours          = 1
   run_minutes        = 0
   run_seconds        = 0
   start_year         = 2016
@@ -9,8 +9,8 @@
   start_hour         = 00
   end_year           = 2016
   end_month          = 10
-  end_day            = 08
-  end_hour           = 00
+  end_day            = 06
+  end_hour           = 12
   interval_seconds   = 21600
   input_from_file    = .true.
   history_interval   = 180
@@ -25,16 +25,16 @@
 /
  
 &domains
-  time_step               = 100
+  time_step               = 4
   max_dom                 = 1
-  e_we                    = 91
-  e_sn                    = 100
+  e_we                    = 1600
+  e_sn                    = 1600
   e_vert                  = 45
   p_top_requested         = 5000
   num_metgrid_levels      = 32
   num_metgrid_soil_levels = 4
-  dx                      = 27000
-  dy                      = 27000
+  dx                      = 1685
+  dy                      = 1685
   grid_id                 = 1
   parent_id               = 0
   i_parent_start          = 1
