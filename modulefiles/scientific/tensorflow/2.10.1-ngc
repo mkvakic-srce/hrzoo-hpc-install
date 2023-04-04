@@ -1,6 +1,6 @@
 #%Module 1.0
 
-set app_ver     tensorflow/2.11.0-ngc
+set app_ver     tensorflow/2.10.1-ngc
 set apps_dir    /apps/scientific/
 set bin_prefix  $apps_dir/$app_ver
 

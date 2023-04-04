@@ -1,4 +1,0 @@
-Bootstrap: localimage
-From: /lustre/home/mkvakic/hpc-install/tensorflow_23.02-tf2-py3.sif
-
-%post  

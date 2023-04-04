@@ -6,14 +6,15 @@
 #PBS -e output/
 
 # pozovi modul
-module load scientific/tensorflow/2.11.0-ngc
+module load scientific/tensorflow/2.10.1-ngc
 
 # pomakni se u direktorij gdje se nalazi skripta
 cd ${PBS_O_WORKDIR:-""}
 
 # potjeraj skriptu
-../../run-singlenode.sh singlegpu.py \
-      --batch-size 256 \
-      --num-warmup-batches 10 \
-      --num-batches-per-iter 10 \
-      --num-iters 10
+run-singlenode.sh benchmark.py \
+      --strategy 1 \
+      --images 10240 \
+      --batch_size 256 \
+      --epochs 10 \
+      --use_fp16
