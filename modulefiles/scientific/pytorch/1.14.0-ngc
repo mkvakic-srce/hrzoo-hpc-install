@@ -1,0 +1,10 @@
+#%Module 1.0
+
+set app_ver     pytorch/1.14.0-ngc
+set apps_dir    /apps/scientific/
+set bin_prefix  $apps_dir/$app_ver
+
+module-whatis   "Sets up $app_ver in your environment"
+
+prepend-path PATH "$bin_prefix"
+setenv IMAGE_PATH "$bin_prefix/image.sif"
