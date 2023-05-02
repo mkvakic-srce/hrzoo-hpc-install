@@ -28,7 +28,7 @@ parser.add_argument("-e",
                     "--epochs",
                     type=int,
                     help="epochs",
-                    default=10)
+                    default=1)
 parser.add_argument('--model',
                     type=str,
                     default='resnet50',
@@ -56,11 +56,16 @@ def benchmark_step():
     loss = F.cross_entropy(output, target)
     loss.backward()
     optimizer.step()
+    return loss.item()
 
 for epoch in range(args.epochs):
     begin = time.time()
     for batches in range(args.images//args.batch_size):
-        benchmark_step()
+        loss = benchmark_step()
+        if (batches%10 == 0):
+            print('--- Epoch %2i, Batch %3i: Loss = %0.2f ---' % (epoch,
+                                                                  batches,
+                                                                  loss,))
     end = time.time()
     imgsec = args.images//(end-begin)
-    print('--- Epoch %i: %0.2f img/sec ---' % (epoch, imgsec))
+    print('--- Epoch %2i finished: %0.2f img/sec ---' % (epoch, imgsec))

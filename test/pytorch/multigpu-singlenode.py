@@ -1,73 +1,77 @@
 # source
-# - https://github.com/horovod/horovod/blob/master/examples/pytorch/pytorch_synthetic_benchmark.py
 # - https://pytorch.org/tutorials/intermediate/dist_tuto.html
+# - https://pytorch.org/vision/main/generated/torchvision.datasets.FakeData.html
+# - https://tuni-itc.github.io/wiki/Technical-Notes/Distributed_dataparallel_pytorch/#setting-up-the-same-model-with-distributeddataparallel
 
-import argparse
-import torch.backends.cudnn as cudnn
-import torch.nn.functional as F
-import torch.optim as optim
-import torch.utils.data.distributed
-from torchvision import models
-import torch.multiprocessing as mp
-
-import sys
 import time
-import numpy as np
 
-# set up mp
-size = os.environ('CUDA_VISIBLE_DEVICES')
-print(size)
-sys.exit('--- exiting on 20 ---')
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.distributed as dist
 
-# Benchmark settings
-parser = argparse.ArgumentParser(description='PyTorch Synthetic Benchmark',
-                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("-i",
-                    "--images",
-                    type=int,
-                    help="image number",
-                    default=1024)
-parser.add_argument('--batch_size',
-                    type=int,
-                    default=32,
-                    help='input batch size')
-parser.add_argument("-e",
-                    "--epochs",
-                    type=int,
-                    help="epochs",
-                    default=10)
-parser.add_argument('--model',
-                    type=str,
-                    default='resnet50',
-                    help='model to benchmark')
-args = parser.parse_args()
+from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from torch.nn.parallel import DistributedDataParallel as DDP
 
-# model
-model = getattr(models, args.model)()
-model.cuda()
+from torchvision.models import resnet50
+from torchvision.datasets import FakeData
+from torchvision.transforms import ToTensor
 
-lr_scaler = 1
-optimizer = optim.SGD(model.parameters(), lr=0.01 * lr_scaler)
+def main():
 
-cudnn.benchmark = True
+    # vars
+    batch = 256
+    samples = 25600
+    epochs = 3
 
-# data
-data = torch.randn(args.batch_size, 3, 224, 224)
-target = torch.LongTensor(args.batch_size).random_() % 1000
-data, target = data.cuda(), target.cuda()
+    # init
+    dist.init_process_group("nccl")
+    rank = dist.get_rank()
+    ngpus = torch.cuda.device_count()
 
-# fit
-def benchmark_step():
-    optimizer.zero_grad()
-    output = model(data)
-    loss = F.cross_entropy(output, target)
-    loss.backward()
-    optimizer.step()
+    # model
+    model = resnet50(weights=None)
+    model = model.to(rank)
+    model = DDP(model, device_ids=[rank])
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    loss_fn = nn.CrossEntropyLoss()
 
-for epoch in range(args.epochs):
-    begin = time.time()
-    for batches in range(args.images//args.batch_size):
-        benchmark_step()
-    end = time.time()
-    imgsec = args.images//(end-begin)
-    print('--- Epoch %i: %0.2f img/sec ---' % (epoch, imgsec))
+    # data
+    dataset = FakeData(samples,
+                       num_classes=1000,
+                       transform=ToTensor())
+    sampler = DistributedSampler(dataset)
+    loader = DataLoader(dataset,
+                        batch_size=batch//ngpus,
+                        sampler=sampler,
+                        shuffle=False,
+                        num_workers=2,
+                        pin_memory=True,)
+
+    # train
+    for epoch in range(epochs):
+        start = time.time()
+        for batch, (images, labels) in enumerate(loader):
+            images = images.to(rank)
+            labels = labels.to(rank)
+            outputs = model(images)
+            classes = torch.argmax(outputs, dim=1)
+            loss = loss_fn(outputs, labels)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            if (rank == 0) and (batch%10 == 0):
+                print('epoch: %3d, batch: %3d, loss: %0.4f' % (epoch+1,
+                                                               batch,
+                                                               loss.item()))
+        if (rank == 0):
+            elapsed = time.time()-start
+            img_sec = samples/elapsed
+            print('Epoch complete in %s seconds [%f img/sec] ' % (elapsed, img_sec))
+
+    # clean
+    dist.destroy_process_group()
+
+if __name__ == "__main__":
+    main()
