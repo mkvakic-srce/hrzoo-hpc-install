@@ -1,0 +1,65 @@
+Bootstrap: docker
+From: rockylinux:8
+
+%files
+  mpi_hello_world.* /myapp/
+
+%environment
+  export LD_LIBRARY_PATH=/usr/local/mpich/lib:$LD_LIBRARY_PATH
+  export PATH=/usr/local/mpich/bin:$PATH
+
+%post
+
+  # apt
+  dnf update -y
+  dnf install -y \
+    make automake gcc gcc-c++ kernel-devel \
+    python3 python3-devel python3-pip \
+    wget
+
+  # mpich
+  cd ~
+  version="4.1"
+  wget -nc https://www.mpich.org/static/downloads/$version/mpich-$version.tar.gz
+  tar xf mpich-$version.tar.gz
+  cd mpich-$version
+  export MPICH_DIR=/usr/local/mpich
+  ./configure \
+    --prefix=$MPICH_DIR \
+    --with-device=ch4:ofi \
+    --with-pm=none \
+    --disable-fortran
+  make -j 64
+  make install
+  ldconfig
+  export PATH=$MPICH_DIR/bin:$PATH
+  export LD_LIBRARY_PATH=$MPICH_DIR/lib:$LD_LIBRARY_PATH
+  cd ~
+  rm -rf mpich-$version*
+
+  # mpi4py
+  cd ~
+  version="3.1.2"
+  wget -nc https://github.com/mpi4py/mpi4py/releases/download/$version/mpi4py-$version.tar.gz
+  tar xf mpi4py-$version.tar.gz
+  cd mpi4py-$version
+  python3 setup.py build
+  python3 setup.py install
+  cd ~
+  rm -rf mpi4py-$version
+
+  # hello world
+  cd /myapp
+  mpicc -o mpi_hello_world mpi_hello_world.c
+
+  # osu benchmarsk
+  cd /myapp
+  wget -nc http://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-5.3.2.tar.gz
+  tar xf osu-micro-benchmarks-5.3.2.tar.gz
+  cd osu-micro-benchmarks-5.3.2
+  ./configure --prefix=/usr/local CC=mpicc CFLAGS=-O3
+  make -j 32
+  make install
+  cd ..
+  rm -rf osu-micro-benchmarks-5.3.2
+  rm osu-micro-benchmarks-5.3.2.tar.gz
