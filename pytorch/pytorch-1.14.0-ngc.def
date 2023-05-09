@@ -1,0 +1,8 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/pytorch:22.12-py3
+
+%post  
+
+  # Ticket 995121
+  pip3 install transformers
+  pip3 install accelerate
