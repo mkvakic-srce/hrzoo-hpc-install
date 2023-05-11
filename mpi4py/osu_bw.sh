@@ -6,9 +6,8 @@
 # environment
 module load PrgEnv-gnu
 module load cray-mpich-abi
-module load libfabric
-module load cray-pmi
 module load cray-pals
+module load cray-pmi
 export APPTAINERENV_LD_LIBRARY_PATH="${CRAY_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}:/opt/cray/pe/pals/1.2.3/lib"
 
 # run
