@@ -1,0 +1,12 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/pytorch:21.02-py3
+
+%post  
+
+  # ticket 841811
+  pip3 install torchtext==0.3.1
+  pip3 install tensorboardX==1.8
+
+  # ticket 995121
+  pip3 install transformers
+  pip3 install accelerate

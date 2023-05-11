@@ -13,12 +13,6 @@ export CUDA_VISIBLE_DEVICES=${device_ids::-1}
 export MASTER_ADDR="127.0.0.1"
 export MASTER_PORT=$(shuf -i 10000-60000 -n 1)
 
-# nccl
-export NCCL_DEBUG=INFO
-# export NCCL_SOCKET_IFNAME=hsn
-# export NCCL_SOCKET_NTHREADS=4
-# export NCCL_NSOCKS_PERTHREAD=8
-
 # run
 singularity exec \
   --nv \
