@@ -25,6 +25,4 @@ export HDF5=$HDF5_DIR
 export NETCDF=$NETCDF_DIR
 ./clean -aa
 printf "%s\n" 35 1 | ./configure
-sed -i 's|^SFC.*|SFC             =       ftn|g' configure.wrf
-sed -i 's|^SCC.*|SCC             =       cc|g' configure.wrf
-./compile -j 32 em_real
+./compile -j 16 em_real

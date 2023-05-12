@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#PBS -q gpu
-#PBS -l select=64:ncpus=1:mem=10GB
+#PBS -q cpu
 #PBS -o output/
 #PBS -e output/
 
@@ -15,4 +14,4 @@ cd $PBS_O_WORKDIR
 ln -sf $WRF_HOME/run/*.TBL .
 ln -sf $WRF_HOME/run/RRTM* .
 ln -sf $WRF_HOME/run/CAMtr_* .
-mpiexec -np 64 wrf.exe
+time mpiexec -np $( wc -l < $PBS_NODEFILE ) wrf.exe

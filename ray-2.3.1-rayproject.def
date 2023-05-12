@@ -1,0 +1,4 @@
+Bootstrap: docker
+From: rayproject/ray-ml:2.3.1-py39-cu116
+
+%post  

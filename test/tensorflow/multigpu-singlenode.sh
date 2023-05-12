@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q gpu
-#PBS -l select=1:ncpus=32:ngpus=4:mem=10GB
+#PBS -l select=1:ncpus=8:ngpus=1:mem=10GB
 #PBS -o output/
 #PBS -e output/
 
@@ -12,9 +12,10 @@ module load scientific/tensorflow/2.10.1-ngc
 cd ${PBS_O_WORKDIR:-""}
 
 # potjeraj skriptu
+batch_size=256
 run-singlenode.sh benchmark.py \
       --strategy 2 \
-      --images 10240 \
-      --batch_size 512 \
-      --epochs 10 \
-      --use_fp16
+      --images $((256*10)) \
+      --batch_size $batch_size \
+      --epochs 10 
+echo "batch_size: $batch_size"

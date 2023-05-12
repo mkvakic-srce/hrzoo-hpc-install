@@ -2,7 +2,6 @@
 
 #PBS -q cpu
 #PBS -l select=1:ncpus=1:mem=20GB
-#PBS -l walltime=6000
 #PBS -o output/
 #PBS -e output/
 

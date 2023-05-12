@@ -14,7 +14,6 @@ cd ${PBS_O_WORKDIR:-""}
 # potjeraj skriptu
 run-singlenode.sh benchmark.py \
       --strategy 1 \
-      --images 10240 \
+      --images $((256*10)) \
       --batch_size 256 \
-      --epochs 10 \
-      --use_fp16
+      --epochs 10

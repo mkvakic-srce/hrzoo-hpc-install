@@ -18,7 +18,7 @@ parser.add_argument("-s",
 parser.add_argument("-i",
                     "--images",
                     type=int,
-                    help="batch size",
+                    help="image number",
                     default=1024)
 parser.add_argument("-b",
                     "--batch_size",

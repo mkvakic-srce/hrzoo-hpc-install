@@ -1,6 +1,6 @@
 &time_control
-  run_days           = 0
-  run_hours          = 1
+  run_days           = 2
+  run_hours          = 0
   run_minutes        = 0
   run_seconds        = 0
   start_year         = 2016
@@ -9,8 +9,8 @@
   start_hour         = 00
   end_year           = 2016
   end_month          = 10
-  end_day            = 06
-  end_hour           = 12
+  end_day            = 08
+  end_hour           = 00
   interval_seconds   = 21600
   input_from_file    = .true.
   history_interval   = 180

@@ -36,8 +36,9 @@ parser.add_argument('--model',
 args = parser.parse_args()
 
 # model
-model = getattr(models, args.model)()
-model.cuda()
+with torch.autocast('cuda'):
+    model = getattr(models, args.model)()
+    model.cuda()
 
 lr_scaler = 1
 optimizer = optim.SGD(model.parameters(), lr=0.01 * lr_scaler)
@@ -45,9 +46,10 @@ optimizer = optim.SGD(model.parameters(), lr=0.01 * lr_scaler)
 cudnn.benchmark = True
 
 # data
-data = torch.randn(args.batch_size, 3, 224, 224)
-target = torch.LongTensor(args.batch_size).random_() % 1000
-data, target = data.cuda(), target.cuda()
+with torch.autocast('cuda'):
+    data = torch.randn(args.batch_size, 3, 224, 224)
+    target = torch.LongTensor(args.batch_size).random_() % 1000
+    data, target = data.cuda(), target.cuda()
 
 # fit
 def benchmark_step():

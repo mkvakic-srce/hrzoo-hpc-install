@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #PBS -q cpu
-#PBS -l select=16:ncpus=1:mem=100GB
-#PBS -l walltime=600
+#PBS -l select=32:ncpus=1:mem=100GB
 #PBS -o output/
 #PBS -e output/
 
@@ -13,4 +12,4 @@ module load scientific/wrf/4.3.3-gnu
 cd $PBS_O_WORKDIR
 
 # real
-mpiexec -np 16 real.exe
+mpiexec -np 32 real.exe

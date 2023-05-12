@@ -1,8 +1,11 @@
 #%Module
 
-module-whatis   "Sets up numactl/v2.0.12-gnu in your enviornment"
+set app_ver numactl/v2.0.16-gnu
 
-prepend-path PATH /apps/libs/numactl/2.0.12-gnu/bin
-prepend-path CPATH /apps/libs/numactl/2.0.12-gnu/include
-prepend-path LD_LIBRARY_PATH /apps/libs/numactl/2.0.12-gnu/lib/
-prepend-path MANPATH /apps/libs/numactl/2.0.12-gnu/share/man
+module-whatis   "Sets up $app_ver in your enviornment"
+
+prepend-path PATH /apps/libs/$app_ver/bin
+prepend-path CPATH /apps/libs/$app_ver/include
+prepend-path LD_LIBRARY_PATH /apps/libs/$app_ver/lib/
+prepend-path PKG_CONFIG_PATH /apps/libs/$app_ver/lib/pkgconfig
+prepend-path MANPATH /apps/libs/$app_ver/share/man
