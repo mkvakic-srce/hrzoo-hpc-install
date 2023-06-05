@@ -2,6 +2,7 @@
 # - https://docs.ray.io/en/latest/train/examples/pytorch/torch_resnet50_example.html#torch-fashion-mnist-ex
 # - https://pytorch.org/vision/stable/generated/torchvision.datasets.FakeData.html#torchvision.datasets.FakeData
 
+import os
 import sys
 import time
 import pprint
@@ -23,12 +24,12 @@ from ray.train.torch import TorchTrainer
 from ray.air.config import ScalingConfig
 
 training_data = datasets.FakeData(
-    size=5000,
+    size=2560,
     transform=ToTensor(),
 )
 
 test_data = datasets.FakeData(
-    size=1000,
+    size=256,
     transform=ToTensor(),
 )
 
@@ -104,38 +105,32 @@ def train_func(config: Dict):
     return loss_results
 
 
-def train_resnet50(num_workers=2, use_gpu=False):
-    trainer = TorchTrainer(
-        train_func,
-        train_loop_config={"lr": 1e-3, "batch_size": 100, "epochs": 10},
-        scaling_config=ScalingConfig(
-            num_workers=num_workers,
-            resources_per_worker={'CPU':8, 'GPU':1},
-            use_gpu=use_gpu,
-        ),
-    )
+def train_resnet50():
+
+    # node & worker info
+    resources = ray.cluster_resources()
+    gpus = int(resources['GPU'])
+    cpus = int(resources['CPU'])
+    resources_per_worker = {'GPU': 1,
+                            'CPU': (cpus-1)//gpus}
+
+    # scaling_config
+    scaling_config = ScalingConfig(use_gpu=True,
+                                   num_workers=gpus,
+                                   resources_per_worker=resources_per_worker)
+
+    # trainer
+    trainer = TorchTrainer(train_func,
+                           scaling_config=scaling_config,
+                           train_loop_config={"lr": 1e-3,
+                                              "epochs": 3,
+                                              "batch_size": 256})
     result = trainer.fit()
     print(f"Results: {result.metrics}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--address", required=False, type=str, help="the address to use for Ray"
-    )
-    parser.add_argument(
-        "--num-workers",
-        "-n",
-        type=int,
-        default=2,
-        help="Sets number of workers for training.",
-    )
-    parser.add_argument(
-        "--use-gpu", action="store_true", default=False, help="Enables GPU training"
-    )
-
-    args, _ = parser.parse_known_args()
-
     import ray
-    ray.init(address="auto")
-    train_resnet50(num_workers=args.num_workers, use_gpu=args.use_gpu)
+    ray.init(address='auto',
+             _node_ip_address=os.environ['NODE_IP_ADDRESS'])
+    train_resnet50()
