@@ -32,9 +32,16 @@ From: ubuntu:20.04
   cd -
   rm -rf Python-$version
 
+  # alternatives
+  update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
+  update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.10 2
+  update-alternatives --install /usr/bin/pip3 pip3 /usr/local/bin/pip3.10 1
+  yes 2 | update-alternatives --config python3
+  yes 1 | update-alternatives --config pip3
+
   # pip
-  pip3.10 install nvidia-pyindex
-  pip3.10 install \
+  pip3 install nvidia-pyindex
+  pip3 install \
     accelerate==0.17.1 \
     lion-pytorch==0.0.7 \
     numpy==1.23.5 \

@@ -22,9 +22,9 @@ import numpy as np
 def main():
 
     # settings
-    batch_size = 256
-    image_number = 25600
     epochs = 3
+    batch_size = 256
+    image_number = 256*30
     model = 'resnet50'
 
     # accelerator
@@ -42,6 +42,7 @@ def main():
     data = FakeData(image_number,
                     num_classes=1000,
                     transform=ToTensor())
+
     loader = DataLoader(data,
                         batch_size=batch_size)
 

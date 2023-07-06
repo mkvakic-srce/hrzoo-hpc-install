@@ -6,7 +6,7 @@ From: nvcr.io/nvidia/pytorch:22.12-py3
   # ticket 995121
   pip3 install \
     accelerate \
+    transformers \
     laspy \
     laszip \
-    scikit-image \
-    transformers
+    scikit-image

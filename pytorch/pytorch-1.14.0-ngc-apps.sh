@@ -16,4 +16,6 @@ cp run-singlegpu.sh $base_dir/.
 cp torchrun-singlenode.sh $base_dir/.
 cp torchrun-multinode.sh $base_dir/.
 cp torchrun-multinode-exec.sh $base_dir/.
+cp accelerate-multinode.sh $base_dir/.
+cp accelerate-multinode-exec.sh $base_dir/.
 chmod 1755 $base_dir/*.sh
