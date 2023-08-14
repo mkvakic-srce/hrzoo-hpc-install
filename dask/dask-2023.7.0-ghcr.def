@@ -1,0 +1,35 @@
+Bootstrap: docker
+From: ghcr.io/dask/dask:2023.7.0
+
+%environment
+  export CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+  export LD_LIBRARY_PATH=${CONDA_DIR}/lib:${CUDNN_PATH}/lib:$LD_LIBRARY_PATH
+  export XLA_FLAGS="--xla_gpu_cuda_data_dir=${CONDA_DIR}/lib"
+
+%post
+
+  # apt
+  apt update
+
+  # tensorflow
+  conda install -c conda-forge cudatoolkit=11.8.0 -y
+  conda install -c nvidia cuda-nvcc=11.3.58
+  python3 -m pip install nvidia-cudnn-cu11==8.6.0.163
+  python3 -m pip install nvidia-tensorrt
+  python3 -m pip install tensorflow==2.12.*
+  python3 -m pip install scikeras
+  mkdir -p $CONDA_DIR/lib/nvvm/libdevice
+  cp -p $CONDA_DIR/lib/libdevice.10.bc $CONDA_DIR/lib/nvvm/libdevice/.
+  exit 0
+
+  # pip
+  python3 -m pip install dask-ml
+  python3 -m pip install matplotlib
+  python3 -m pip install seaborn
+  python3 -m pip install pandas
+
+  # pytorch
+  python3 -m pip install torch
+  python3 -m pip install torchvision
+  python3 -m pip install tensorboard
+  python3 -m pip install skorch
