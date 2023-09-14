@@ -1,4 +1,8 @@
 Bootstrap: docker
 From: rayproject/ray-ml:2.4.0-py39-cu116
 
-%post  
+%post
+  pip install tensorrt --extra-index-url https://pypi.nvidia.com
+  cd /home/ray/anaconda3/lib/python3.9/site-packages/tensorrt_libs
+  ln -s libnvinfer.so.8 libnvinfer.so.7
+  ln -s libnvinfer_plugin.so.8 libnvinfer_plugin.so.7

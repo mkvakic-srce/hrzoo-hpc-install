@@ -20,4 +20,4 @@ apptainer exec \
 
 # kill cluster
 echo "[$(date +%d-%m-%Y' '%H:%M:%S)] ray-submit.sh: stopping cluster on node $(hostname)"
-pbsdsh -- $APP_COMMAND ray stop --force
+pbsdsh -- $APP_COMMAND ray stop --force 2>/dev/null

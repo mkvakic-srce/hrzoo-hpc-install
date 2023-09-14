@@ -33,5 +33,6 @@ else
   mpiexec \
     --np $(sort -u $PBS_NODEFILE | wc -l) \
     --ppn 1 \
+    --cpu-bind none \
     ray-cluster.sh $@
 fi

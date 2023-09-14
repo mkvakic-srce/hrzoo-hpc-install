@@ -23,15 +23,11 @@ import ray.train as train
 from ray.train.torch import TorchTrainer
 from ray.air.config import ScalingConfig
 
-training_data = datasets.FakeData(
-    size=2560,
-    transform=ToTensor(),
-)
+training_data = datasets.FakeData(size=2560,
+                                  transform=ToTensor())
 
-test_data = datasets.FakeData(
-    size=256,
-    transform=ToTensor(),
-)
+test_data = datasets.FakeData(size=256,
+                              transform=ToTensor())
 
 def train_epoch(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset) // session.get_world_size()
@@ -63,11 +59,9 @@ def validate_epoch(dataloader, model, loss_fn):
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
-    print(
-        f"Test Error: \n "
-        f"Accuracy: {(100 * correct):>0.1f}%, "
-        f"Avg loss: {test_loss:>8f} \n"
-    )
+    print(f"Test Error: \n "
+          f"Accuracy: {(100 * correct):>0.1f}%, "
+          f"Avg loss: {test_loss:>8f} \n")
     return test_loss
 
 
@@ -76,7 +70,7 @@ def train_func(config: Dict):
     lr = config["lr"]
     epochs = config["epochs"]
 
-    worker_batch_size = batch_size // session.get_world_size()
+    worker_batch_size = batch_size
 
     # Create data loaders.
     train_dataloader = DataLoader(training_data, batch_size=worker_batch_size)
@@ -105,7 +99,7 @@ def train_func(config: Dict):
     return loss_results
 
 
-def train_resnet50():
+def main():
 
     # node & worker info
     resources = ray.cluster_resources()
@@ -128,9 +122,8 @@ def train_resnet50():
     result = trainer.fit()
     print(f"Results: {result.metrics}")
 
-
 if __name__ == "__main__":
     import ray
     ray.init(address='auto',
              _node_ip_address=os.environ['NODE_IP_ADDRESS'])
-    train_resnet50()
+    main()

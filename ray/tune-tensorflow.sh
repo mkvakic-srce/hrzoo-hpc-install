@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -l select=12:ngpus=1:ncpus=4
+#PBS -l select=2:ngpus=2:ncpus=16
 #PBS -e output/
 #PBS -o output/
 
@@ -11,4 +11,4 @@ module load scientific/ray/2.4.0-rayproject
 cd ${PBS_O_WORKDIR:-""}
 
 # run
-ray-launcher.sh pytorch.py
+ray-launcher.sh tune-tensorflow.py
