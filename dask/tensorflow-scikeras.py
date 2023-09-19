@@ -61,7 +61,10 @@ def main():
     max_epochs = 10
 
     # data
-    X, y = make_classification(1000, 20, n_informative=10, random_state=0)
+    X, y = make_classification(n_samples=1000,
+                               n_features=20,
+                               n_informative=10,
+                               random_state=0)
     X = X.astype(np.float32)
     y = y.astype(np.int64)
 
@@ -71,28 +74,25 @@ def main():
                           hidden_layer_dim=100)
 
     # gs
-    params = {
+    param_grid = {
         "hidden_layer_dim": [50, 100, 200],
-        "loss": ["sparse_categorical_crossentropy"],
         "optimizer": ["adam", "sgd"],
         "optimizer__learning_rate": [0.0001, 0.001, 0.1],
     }
     gs = GridSearchCV(clf,
-                      param_grid = {
-                          "hidden_layer_dim": [50, 100, 200],
-                          "loss": ["sparse_categorical_crossentropy"],
-                          "optimizer": ["adam", "sgd"],
-                          "optimizer__learning_rate": [0.0001, 0.001, 0.1],
-                      },
+                      param_grid=param_grid,
                       refit=False,
                       cv=3,
-                      scoring='accuracy')
+                      scoring='f1')
 
     # fit
     now = time.time()
     with parallel_backend('dask'):
-        gs.fit(X, y)
+        gs.fit(X, y, verbose=2)
     print('fit elapsed in %0.2f' % (time.time()-now))
+
+    # shutdown
+    client.shutdown()
 
 if __name__ == "__main__":
     main()

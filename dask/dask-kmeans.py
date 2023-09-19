@@ -16,8 +16,8 @@ def main():
 
     # kreiraj podatke
     n_clusters = 10
-    n_samples = 3*10**7
-    n_chunks = int(os.environ['PMI_SIZE'])
+    n_samples = 10**7
+    n_chunks = len(client.scheduler_info()['workers'])
     X, _ = dask_ml.datasets.make_blobs(centers = n_clusters,
                                        chunks = n_samples//n_chunks,
                                        n_samples = n_samples)

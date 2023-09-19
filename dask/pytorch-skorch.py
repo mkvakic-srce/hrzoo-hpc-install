@@ -58,19 +58,19 @@ def main():
                               device = 'cuda')
     # search
     search = GridSearchCV(net,
-                          param_grid = {'max_epochs': [1, 3, 10, 30],
-                                        'module__num_units': [1, 10, 100, 1000],
+                          param_grid = {'max_epochs': [3, 10, 30],
+                                        'module__num_units': [10, 100, 1000],
                                         'module__nonlin': [nn.ReLU(), nn.Tanh()]},
                           scoring = 'accuracy',
                           error_score = 'raise',
                           refit = False,
-                          verbose = 3,
+                          verbose = 2,
                           cv = 3)
 
     # fit
     now = time.time()
     with parallel_backend('dask'):
-        search.fit(X, y)
+        search.fit(X, y, verbose=1)
     print('fit elapsed in %0.2f' % (time.time()-now))
 
     # shutdown

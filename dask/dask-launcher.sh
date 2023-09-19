@@ -19,6 +19,17 @@ export SCHEDULER_ADDRESS="${SCHEDULER_IP}:${SCHEDULER_PORT}"
 # apptainer command
 export APP_COMMAND="apptainer exec --nv --pwd /host_pwd --bind ${PWD}:/host_pwd $IMAGE_PATH"
 
+# hosts
+if [ ! -z $CUDA_VISIBLE_DEVICES ]; then
+  ngpus=$(egrep -o 'GPU-[a-z0-9\-]+' <<< $CUDA_VISIBLE_DEVICES | wc -l)
+  worker_hosts=$( seq 1 $ngpus | xargs -Inone cat ${PBS_NODEFILE} | sort | tr '\n' ',' )
+else
+  worker_hosts=$(tr '\n' ',' < ${PBS_NODEFILE})
+fi
+scheduler_host=$(head -1 ${PBS_NODEFILE})
+submit_host=$scheduler_host
+hosts="${scheduler_host},${worker_hosts:0:-1},${submit_host}"
+
 # exit if no file given
 if [[ $# -eq 0 ]]; then
   echo "[$(date +%d-%m-%Y' '%H:%M:%S)] dask-launcher.sh: no arguments given"
@@ -27,8 +38,7 @@ else
   # otherwise launch
   echo "[$(date +%d-%m-%Y' '%H:%M:%S)] dask-launcher.sh: launching"
   mpiexec \
-    --np $(sort -u $PBS_NODEFILE | wc -l) \
-    --ppn 1 \
+    --hosts ${hosts} \
     --cpu-bind none \
     dask-cluster.sh $@
 fi

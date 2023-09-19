@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -l select=1:ngpus=2:ncpus=2
+#PBS -l select=2:ngpus=2:ncpus=2
 #PBS -l place=scatter
 
 # environment

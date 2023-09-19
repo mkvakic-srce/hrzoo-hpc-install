@@ -32,8 +32,8 @@ def main():
     search = RandomizedSearchCV(model,
                                 param_space,
                                 cv=3,
-                                n_iter=1000,
-                                verbose=10)
+                                n_iter=3000,
+                                verbose=2)
 
     # fit
     with joblib.parallel_backend('dask'):
