@@ -11,6 +11,12 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
+
+epochs = 10
+batch_size = 256
+samples = batch_size*10
+num_classes = 1000
+
 def train_mnist(config):
 
     # data
@@ -39,12 +45,6 @@ def train_mnist(config):
               callbacks = [TuneReportCallback({"mean_accuracy": "accuracy"})])
 
 def main():
-
-    # vars
-    epochs = 10
-    batch_size = 256
-    samples = batch_size*10
-    num_classes = 1000
 
     # resources
     resources = ray.cluster_resources()

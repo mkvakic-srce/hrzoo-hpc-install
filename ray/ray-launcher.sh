@@ -23,6 +23,12 @@ export SLEEP_DT=5
 # apptainer command
 export APP_COMMAND="apptainer exec --nv --pwd /host_pwd --bind ${PWD}:/host_pwd $IMAGE_PATH"
 
+# hosts
+worker_hosts=$(tail -n +2 ${PBS_NODEFILE} | tr '\n' ',')
+head_host=$(head -1 ${PBS_NODEFILE})
+submit_host=$head_host
+hosts="${head_host},${worker_hosts:0:-1},${submit_host}"
+
 # exit if no file given
 if [[ $# -eq 0 ]]; then
   echo "[$(date +%d-%m-%Y' '%H:%M:%S)] ray-launcher.sh: no arguments given"
@@ -31,8 +37,7 @@ else
   # otherwise launch
   echo "[$(date +%d-%m-%Y' '%H:%M:%S)] ray-launcher.sh: launching"
   mpiexec \
-    --np $(sort -u $PBS_NODEFILE | wc -l) \
-    --ppn 1 \
+    --hosts ${hosts} \
     --cpu-bind none \
     ray-cluster.sh $@
 fi
