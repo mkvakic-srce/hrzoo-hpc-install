@@ -24,10 +24,11 @@ export SLEEP_DT=5
 export APP_COMMAND="apptainer exec --nv --pwd /host_pwd --bind ${PWD}:/host_pwd $IMAGE_PATH"
 
 # hosts
-worker_hosts=$(tail -n +2 ${PBS_NODEFILE} | tr '\n' ',')
-head_host=$(head -1 ${PBS_NODEFILE})
+head_host=$( head -1 ${PBS_NODEFILE} )
+worker_hosts=$( sort -u ${PBS_NODEFILE} | sed "/${head_host}/d" | tr '\n' ',' )
+worker_hosts=$( echo "${worker_hosts}," )
 submit_host=$head_host
-hosts="${head_host},${worker_hosts:0:-1},${submit_host}"
+hosts="${head_host},${worker_hosts:0:-1}${submit_host}"
 
 # exit if no file given
 if [[ $# -eq 0 ]]; then

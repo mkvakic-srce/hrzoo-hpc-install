@@ -12,7 +12,7 @@ apptainer exec \
     $IMAGE_PATH ray start \
         --head \
         --block \
-        --num-cpus=$((NCPUS+1)) \
+        --num-cpus=$((NCPUS-1)) \
         --num-gpus=$(grep -o GPU <<< $CUDA_VISIBLE_DEVICES | wc -l) \
         --include-dashboard=False \
         --node-ip-address=${HEAD_IP_ADDRESS} \
