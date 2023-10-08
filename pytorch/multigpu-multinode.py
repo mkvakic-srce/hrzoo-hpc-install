@@ -24,7 +24,7 @@ def main():
     # vars
     batch = 256
     samples = 256*100
-    epochs = 3
+    epochs = 1
 
     # init
     dist.init_process_group("nccl")
@@ -63,14 +63,15 @@ def main():
             loss.backward()
             optimizer.step()
             if (global_rank == 0) and (batch%10 == 0):
-                print('epoch: %3d, batch: %3d/%3d, loss: %0.4f' % (epoch+1,
-                                                                   batch,
-                                                                   len(loader),
-                                                                   loss.item()))
+                print('--- Epoch %i, Batch %i/%i, Loss = %0.2f ---' % (epoch,
+                                                                       batch,
+                                                                       len(loader),
+                                                                       loss.item()))
         if (global_rank == 0):
             elapsed = time.time()-start
-            img_sec = samples/elapsed
-            print('Epoch complete in %0.2f seconds [%0.2f img/sec] ' % (elapsed, img_sec))
+            imgsec = samples/elapsed
+            print('--- Epoch %i finished: %0.2f img/sec ---' % (epoch,
+                                                                imgsec))
 
     # clean
     dist.destroy_process_group()

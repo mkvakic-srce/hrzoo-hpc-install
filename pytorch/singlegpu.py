@@ -1,73 +1,63 @@
 # source
 # - https://github.com/horovod/horovod/blob/master/examples/pytorch/pytorch_synthetic_benchmark.py
 
-import argparse
-import torch.backends.cudnn as cudnn
-import torch.nn.functional as F
-import torch.optim as optim
-import torch.utils.data.distributed
-from torchvision import models
-
-import sys
+import os
 import time
-import numpy as np
 
-# Benchmark settings
-parser = argparse.ArgumentParser(description='PyTorch Synthetic Benchmark',
-                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("-i",
-                    "--images",
-                    type=int,
-                    help="image number",
-                    default=1024)
-parser.add_argument('--batch_size',
-                    type=int,
-                    default=32,
-                    help='input batch size')
-parser.add_argument("-e",
-                    "--epochs",
-                    type=int,
-                    help="epochs",
-                    default=1)
-parser.add_argument('--model',
-                    type=str,
-                    default='resnet50',
-                    help='model to benchmark')
-args = parser.parse_args()
+import torch
+import torch.nn as nn
+import torch.optim as optim
 
-# model
-with torch.autocast('cuda'):
-    model = getattr(models, args.model)()
+from torch.utils.data import DataLoader
+
+from torchvision.models import resnet50
+from torchvision.datasets import FakeData
+from torchvision.transforms import ToTensor
+
+def main():
+
+    # vars
+    batch = 256
+    samples = 256*100
+    epochs = 1
+
+    # model
+    model = resnet50(weights=None)
     model.cuda()
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    loss_fn = nn.CrossEntropyLoss()
 
-lr_scaler = 1
-optimizer = optim.SGD(model.parameters(), lr=0.01 * lr_scaler)
+    # data
+    dataset = FakeData(samples,
+                       num_classes=1000,
+                       transform=ToTensor())
+    loader = DataLoader(dataset,
+                        batch_size=batch,
+                        shuffle=False,
+                        num_workers=1,
+                        pin_memory=True)
 
-cudnn.benchmark = True
+    # train
+    for epoch in range(epochs):
+        start = time.time()
+        for batch, (images, labels) in enumerate(loader):
+            images = images.cuda()
+            labels = labels.cuda()
+            outputs = model(images)
+            classes = torch.argmax(outputs, dim=1)
+            loss = loss_fn(outputs, labels)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            if (batch%10 == 0):
+                print('--- Epoch %i, Batch %3i / 3%i, Loss = %0.2f ---' % (epoch,
+                                                                           batch,
+                                                                           len(loader),
+                                                                           loss.item()))
+        elapsed = time.time()-start
+        imgsec = samples/elapsed
+        print('--- Epoch %i finished: %0.2f img/sec ---' % (epoch,
+                                                            imgsec))
 
-# data
-with torch.autocast('cuda'):
-    data = torch.randn(args.batch_size, 3, 224, 224)
-    target = torch.LongTensor(args.batch_size).random_() % 1000
-    data, target = data.cuda(), target.cuda()
-
-# fit
-def benchmark_step():
-    optimizer.zero_grad()
-    output = model(data)
-    loss = F.cross_entropy(output, target)
-    loss.backward()
-    optimizer.step()
-    return loss.item()
-
-for epoch in range(args.epochs):
-    begin = time.time()
-    for batches in range(args.images//args.batch_size):
-        loss = benchmark_step()
-        if (batches%10 == 0):
-            print('--- Epoch %2i, Batch %3i: Loss = %0.2f ---' % (epoch,
-                                                                  batches,
-                                                                  loss,))
-    end = time.time()
-    imgsec = args.images//(end-begin)
-    print('--- Epoch %2i finished: %0.2f img/sec ---' % (epoch, imgsec))
+if __name__ == "__main__":
+    main()

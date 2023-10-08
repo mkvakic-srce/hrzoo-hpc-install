@@ -2,11 +2,9 @@
 
 #PBS -q gpu
 #PBS -l ngpus=1
-#PBS -o output/
-#PBS -e output/
 
 # pozovi modul
-module load scientific/pytorch/1.14.0-ngc
+module load scientific/pytorch/2.0.0-ngc
 
 # pomakni se u direktorij gdje se nalazi skripta
 cd ${PBS_O_WORKDIR:-""}
