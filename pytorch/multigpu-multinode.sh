@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #PBS -q gpu
-#PBS -l select=2:ngpus=1:ncpus=4
+#PBS -l select=2:ngpus=2:ncpus=8
+#PBS -l place=scatter
 
 # pozovi module
 module load scientific/pytorch/2.0.0-ngc
@@ -10,4 +11,5 @@ module load scientific/pytorch/2.0.0-ngc
 cd ${PBS_O_WORKDIR:-""}
 
 # potjeraj skriptu korištenjem torchrun-multinode.sh
-torchrun-multinode.sh multigpu-multinode.py
+export PATH=${PWD}:${PATH}
+distributed-multinode.sh multigpu-multinode.py

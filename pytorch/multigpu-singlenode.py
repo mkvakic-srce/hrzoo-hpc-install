@@ -12,7 +12,7 @@ import torch.distributed as dist
 
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.nn.parallel import DistributedDataParallel
 
 from torchvision.models import resnet50
 from torchvision.datasets import FakeData
@@ -23,7 +23,7 @@ def main():
     # vars
     batch = 256
     samples = 25600
-    epochs = 3
+    epochs = 1
 
     # init
     dist.init_process_group("nccl")
@@ -33,8 +33,10 @@ def main():
     # model
     model = resnet50(weights=None)
     model = model.to(rank)
-    model = DDP(model, device_ids=[rank])
-    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    model = DistributedDataParallel(model,
+                                    device_ids=[rank])
+    optimizer = optim.SGD(model.parameters(),
+                          lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 
     # data
@@ -43,7 +45,7 @@ def main():
                        transform=ToTensor())
     sampler = DistributedSampler(dataset)
     loader = DataLoader(dataset,
-                        batch_size=batch//ngpus,
+                        batch_size=batch,
                         sampler=sampler,
                         shuffle=False,
                         num_workers=2,
@@ -62,13 +64,15 @@ def main():
             loss.backward()
             optimizer.step()
             if (rank == 0) and (batch%10 == 0):
-                print('epoch: %3d, batch: %3d, loss: %0.4f' % (epoch+1,
-                                                               batch,
-                                                               loss.item()))
+                print('--- Epoch %i, Batch %i/%i, Loss = %0.2f ---' % (epoch,
+                                                                       batch,
+                                                                       len(loader),
+                                                                       loss.item()))
         if (rank == 0):
             elapsed = time.time()-start
-            img_sec = samples/elapsed
-            print('Epoch complete in %s seconds [%f img/sec] ' % (elapsed, img_sec))
+            imgsec = samples/elapsed
+            print('--- Epoch %i finished: %0.2f img/sec ---' % (epoch,
+                                                                imgsec))
 
     # clean
     dist.destroy_process_group()

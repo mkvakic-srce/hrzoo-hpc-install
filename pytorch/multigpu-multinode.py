@@ -5,15 +5,16 @@
 
 import os
 import time
+import numpy as np
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.distributed as dist
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.nn.parallel import DistributedDataParallel
 
 from torchvision.models import resnet50
 from torchvision.datasets import FakeData
@@ -23,7 +24,7 @@ def main():
 
     # vars
     batch = 256
-    samples = 256*100
+    samples = 25600
     epochs = 1
 
     # init
@@ -34,8 +35,10 @@ def main():
     # model
     model = resnet50(weights=None)
     model = model.to(rank)
-    model = DDP(model, device_ids=[rank])
-    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    model = DistributedDataParallel(model,
+                                    device_ids=[rank])
+    optimizer = optim.SGD(model.parameters(),
+                          lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 
     # data

@@ -13,6 +13,9 @@ apptainer build $base_dir/image.sif pytorch-2.0.0-ngc.def
 # copy wrappers
 cp run-command.sh $base_dir/.
 cp run-singlegpu.sh $base_dir/.
+cp distributed-singlenode.sh $base_dir/.
+cp distributed-multinode.sh $base_dir/.
+cp distributed-multinode-exec.sh $base_dir/.
 cp torchrun-singlenode.sh $base_dir/.
 cp torchrun-multinode.sh $base_dir/.
 cp torchrun-multinode-exec.sh $base_dir/.
