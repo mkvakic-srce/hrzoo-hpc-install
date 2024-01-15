@@ -2,7 +2,8 @@ Bootstrap: docker
 From: rockylinux:8
 
 %files
-  mpi_hello_world.c /myapp/
+  mpi_hello_world.c /myapp/mpi_hello_world.c
+  mpi_hello_world.py /myapp/mpi_hello_world.py
 
 %environment
   export LD_LIBRARY_PATH=/usr/lib64/mpich/lib:$LD_LIBRARY_PATH
@@ -13,10 +14,14 @@ From: rockylinux:8
   # dnf
   dnf update -y
   dnf install mpich-devel -y
+  dnf install python3-pip python3-devel -y
 
-  # mpich 
+  # mpich paths
   export LD_LIBRARY_PATH=/usr/lib64/mpich/lib:$LD_LIBRARY_PATH
   export PATH=/usr/lib64/mpich/bin:$PATH
 
   # hello world
   mpicc -o /myapp/mpi_hello_world /myapp/mpi_hello_world.c
+
+  # mpi4py
+  pip3 install mpi4py
